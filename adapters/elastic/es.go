@@ -1,8 +1,7 @@
-package adapters
+package elastic
 
 import (
-	"io"
-
+	"github.com/nubunto/loggo/adapters"
 	elastic "gopkg.in/olivere/elastic.v3"
 )
 
@@ -10,14 +9,6 @@ const (
 	defaultIndex = "elastic-logger"
 	defaultType  = "elastic-log"
 )
-
-type Adapter struct {
-	Handler
-
-	errHandler func(error)
-}
-
-type AdapterOption func(*Adapter) error
 
 type ElasticHandler struct {
 	index    string
@@ -64,7 +55,7 @@ func (e *ElasticHandler) HandlePayload(b []byte) error {
 	return nil
 }
 
-func NewElasticHandler(opts ...ElasticHandlerOption) (*ElasticHandler, error) {
+func NewElasticHandler(opts ...ElasticHandlerOption) (adapters.Handler, error) {
 	e := &ElasticHandler{
 		index:    defaultIndex,
 		typeName: defaultType,
@@ -76,21 +67,4 @@ func NewElasticHandler(opts ...ElasticHandlerOption) (*ElasticHandler, error) {
 		}
 	}
 	return e, nil
-}
-
-func NewAdapter(e Handler) (io.Writer, error) {
-	es := &Adapter{
-		Handler: e,
-	}
-
-	return es, nil
-}
-
-func (e *Adapter) Write(b []byte) (int, error) {
-	buffercopy := make([]byte, len(b))
-	copy(buffercopy, b)
-	if err := e.HandlePayload(buffercopy); err != nil {
-		return 0, err
-	}
-	return len(b), nil
 }

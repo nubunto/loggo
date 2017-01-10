@@ -1,4 +1,4 @@
-package adapters
+package elastic
 
 import (
 	"bytes"
@@ -8,16 +8,17 @@ import (
 	"testing"
 
 	"github.com/nubunto/loggo"
+	"github.com/nubunto/loggo/adapters"
 )
 
 func TestESAdapter(t *testing.T) {
 	esBuffer := new(bytes.Buffer)
-	esHandler := HandlerFunc(func(b []byte) error {
+	esHandler := adapters.HandlerFunc(func(b []byte) error {
 		esBuffer.Write(b)
 		return nil
 	})
 
-	adapter, err := NewAdapter(esHandler)
+	adapter, err := adapters.NewAdapter(esHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,11 +40,12 @@ func TestElasticHandlerOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if esHandler.index != "foobar" {
-		t.Errorf("index should be foobar, it is %s", esHandler.index)
+	c := esHandler.(*ElasticHandler)
+	if c.index != "foobar" {
+		t.Errorf("index should be foobar, it is %s", c.index)
 	}
-	if esHandler.typeName != "not-a-log" {
-		t.Errorf("typeName should be 'not-a-log', it is %s", esHandler.typeName)
+	if c.typeName != "not-a-log" {
+		t.Errorf("typeName should be 'not-a-log', it is %s", c.typeName)
 	}
 }
 
@@ -69,7 +71,7 @@ func TestRealES(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	esAdapter, err := NewAdapter(esHandler)
+	esAdapter, err := adapters.NewAdapter(esHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,11 +89,11 @@ func TestRealES(t *testing.T) {
 
 func TestElasticAdapterErrHandler(t *testing.T) {
 	sentinel := errors.New("oops")
-	esHandler := HandlerFunc(func(b []byte) error {
+	esHandler := adapters.HandlerFunc(func(b []byte) error {
 		return sentinel
 	})
 
-	esAdapter, err := NewAdapter(esHandler)
+	esAdapter, err := adapters.NewAdapter(esHandler)
 	if err != nil {
 		t.Fatal(err)
 	}

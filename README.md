@@ -30,14 +30,15 @@ package main
 
 import (
   "github.com/nubunto/loggo"
-  es "github.com/nubunto/loggo/adapters"
+  "github.com/nubunto/loggo/adapters"
+  es "github.com/nubunto/loggo/adapters/elastic"
 )
 
 func main() {
-  esHandler, err := adapters.NewElasticHandler(
-    es.Type("logger"),
-    es.Index("logging"),
-    es.Client(), // default ES client
+  esHandler, err := elastic.NewElasticHandler(
+    elastic.Type("logger"),
+    elastic.Index("logging"),
+    elastic.Client(), // default ES client
   )
   if err != nil {
     // ...
