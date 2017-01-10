@@ -31,7 +31,7 @@ package main
 import (
   "github.com/nubunto/loggo"
   "github.com/nubunto/loggo/adapters"
-  es "github.com/nubunto/loggo/adapters/elastic"
+  "github.com/nubunto/loggo/adapters/elastic"
 )
 
 func main() {
