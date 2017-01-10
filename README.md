@@ -20,6 +20,7 @@ func main() {
     loggo.JSON(os.Stdout),
   )
   l.Log("hello", "world") // logs '{"hello": "world"}' to STDOUT
+}
 ```
 
 The bulk of this library lives inside the `adapters` package, in which an adapter for ElasticSearch is builtin:
