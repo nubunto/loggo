@@ -1,39 +1,11 @@
 package elastic
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"testing"
 
 	"github.com/nubunto/loggo"
 	"github.com/nubunto/loggo/adapters"
 )
-
-func TestESAdapter(t *testing.T) {
-	esBuffer := new(bytes.Buffer)
-	esHandler := adapters.HandlerFunc(func(b []byte) error {
-		esBuffer.Write(b)
-		return nil
-	})
-
-	adapter, err := adapters.NewAdapter(esHandler)
-	if err != nil {
-		t.Fatal(err)
-	}
-	l := loggo.New(loggo.JSON(adapter))
-
-	if err := l.Log("this-should", "go to esBuffer"); err != nil {
-		t.Fatalf("Shouldn't error: instead, we have %#v", err)
-	}
-	m := make(map[string]interface{})
-	body, _ := ioutil.ReadAll(esBuffer)
-	json.Unmarshal(body, &m)
-	if m["this-should"] != "go to esBuffer" {
-		t.Errorf("m['this-should'] should be 'go to esBuffer', have %s instead", m["this-should"])
-	}
-}
 
 func TestElasticHandlerOptions(t *testing.T) {
 	esHandler, err := NewElasticHandler(Index("foobar"), Type("not-a-log"))
@@ -84,24 +56,5 @@ func TestRealES(t *testing.T) {
 	e.Log("c", 3)
 	if e.err != nil {
 		t.Fatal(err)
-	}
-}
-
-func TestElasticAdapterErrHandler(t *testing.T) {
-	sentinel := errors.New("oops")
-	esHandler := adapters.HandlerFunc(func(b []byte) error {
-		return sentinel
-	})
-
-	esAdapter, err := adapters.NewAdapter(esHandler)
-	if err != nil {
-		t.Fatal(err)
-	}
-	l := loggo.New(
-		loggo.JSON(esAdapter),
-	)
-	err = l.Log("this", "should fail")
-	if err != sentinel {
-		t.Errorf("error %v should be %v", err, sentinel)
 	}
 }
