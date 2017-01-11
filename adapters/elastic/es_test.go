@@ -26,7 +26,7 @@ type errLogger struct {
 	loggo.Logger
 }
 
-func (e errLogger) Log(args ...interface{}) error {
+func (e *errLogger) Log(args ...interface{}) error {
 	if e.err != nil {
 		// stop
 		return e.err
@@ -43,14 +43,11 @@ func TestRealES(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	esAdapter, err := adapters.NewAdapter(esHandler)
-	if err != nil {
-		t.Fatal(err)
-	}
+	esAdapter := adapters.NewAdapter(esHandler)
 	esLogger := loggo.New(
 		loggo.JSON(esAdapter),
 	)
-	e := errLogger{Logger: esLogger}
+	e := &errLogger{Logger: esLogger}
 	e.Log("a", 1)
 	e.Log("b", 2)
 	e.Log("c", 3)
