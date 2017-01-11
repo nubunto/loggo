@@ -35,6 +35,8 @@ import (
 )
 
 func main() {
+  // create & configure the ElasticSearch handler
+  // this is the guy that actually speaks to elastic
   esHandler, err := elastic.NewElasticHandler(
     elastic.Type("logger"),
     elastic.Index("logging"),
@@ -43,15 +45,16 @@ func main() {
   if err != nil {
     // ...
   }
-  esAdapter, err := adapters.NewAdapter(esHandler)
-  if err != nil {
-    // ...
-  }
+
+  // create the adapter for it
+  // this is the guy that takes input from the logger
+  esAdapter := adapters.NewAdapter(esHandler)
+
   l := loggo.New(
     loggo.JSON(esAdapter),
   )
   
-  // log directly to elastic search
+  // and now we just log directly to elastic search
   l.Log("this-key", "goes to elastic search under index 'logging' and type 'logger'")
 }
 ```
