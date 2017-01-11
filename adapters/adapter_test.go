@@ -17,10 +17,7 @@ func TestESAdapter(t *testing.T) {
 		return nil
 	})
 
-	adapter, err := NewAdapter(handler)
-	if err != nil {
-		t.Fatal(err)
-	}
+	adapter := NewAdapter(handler)
 	l := loggo.New(loggo.JSON(adapter))
 
 	if err := l.Log("this-should", "go to esBuffer"); err != nil {
@@ -40,14 +37,11 @@ func TestElasticAdapterErrHandler(t *testing.T) {
 		return sentinel
 	})
 
-	adapter, err := NewAdapter(handler)
-	if err != nil {
-		t.Fatal(err)
-	}
+	adapter := NewAdapter(handler)
 	l := loggo.New(
 		loggo.JSON(adapter),
 	)
-	err = l.Log("this", "should fail")
+	err := l.Log("this", "should fail")
 	if err != sentinel {
 		t.Errorf("error %v should be %v", err, sentinel)
 	}

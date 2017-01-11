@@ -6,12 +6,10 @@ type Adapter struct {
 	Handler
 }
 
-func NewAdapter(e Handler) (io.Writer, error) {
-	es := &Adapter{
+func NewAdapter(e Handler) io.Writer {
+	return &Adapter{
 		Handler: e,
 	}
-
-	return es, nil
 }
 
 func (e *Adapter) Write(b []byte) (int, error) {
